@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+	<head>
+    		<meta charset="utf-8">
+    		<meta name="viewport" content="width=device-width, initial-scale=1">
+    		<title>Bootstrap demo</title>
+    		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    		<link rel="stylesheet" href="styles.css">
+  	</head>
+  	<body>
+		<header>
+<!-- heading + right menu-->
+			<div class="p-4 text-center bg-body-tertiary d-flex justify-content-between">
+			  	<h1 class="mb-3">Skelbimai</h1>
+ 				<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+				<!-- Container wrapper -->
+				<div class="container-fluid">
+				  <!-- Toggle button -->
+				  <button
+				    data-mdb-collapse-init
+				    class="navbar-toggler"
+				    type="button"
+				    data-mdb-target="#navbarRightAlignExample"
+				    aria-controls="navbarRightAlignExample"
+				    aria-expanded="false"
+				    aria-label="Toggle navigation"
+				  >
+				    <i class="fas fa-bars"></i>
+				  </button>
+			    
+				  <!-- Collapsible wrapper -->
+				  <div class="collapse navbar-collapse" id="navbarRightAlignExample">
+					<div id="currentUser">
+
+					</div>
+				<!-- Right links -->
+				    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+					  <a class="nav-link active" aria-current="page" id="loginMenu" href="#" hidden>Prisijungti</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" id="regMenu" href="#" hidden>Registruotis</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" id="logoutMenu" href="#" hidden>Atsijungti</a>
+					</li>
+				    </ul>
+				    <!-- Right links -->
+				  </div>
+				  <!-- Collapsible wrapper -->
+				</div>
+				<!-- Container wrapper -->
+				</nav>
+			</div>
+<!-- Navbar left menu -->
+			<nav class="navbar navbar-expand-lg bg-body" id="navbar" hidden>
+			  <div class="container-fluid">
+			    <button
+				data-mdb-collapse-init
+				class="navbar-toggler"
+				type="button"
+				data-mdb-target="#navbarExample01"
+				aria-controls="navbarExample01"
+				aria-expanded="false"
+				aria-label="Toggle navigation"
+			    >
+				<i class="fas fa-bars"></i>
+			    </button>
+			    <div class="collapse navbar-collapse" id="navbarExample01">
+				<ul class="nav nav-pills">
+					<li class="nav-item">
+					  <a class="nav-link" aria-current="page" href="#" id="createCat" hidden>Sukurti kategorija</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="#" id="showUsers" hidden>Rodyti Vartotojus</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" id="createAdButton" hidden>Ideti skelbima</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="#" id="allAds" hidden>Visi Skelbimai</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" id="myAds" hidden>Mano skelbimai</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" id="favorites" hidden>Megstamiausi</a>
+					</li>
+					<li class="nav-item dropdown" >
+		
+					<select class="form-select" aria-label="Default select example" id="dropdownMenu" hidden>
+					
+						</select>
+					</ul>
+					</li>
+				      </ul>
+			    </div>
+			  </div>
+			</nav>
+			
+	
+		    </header>
+
+
+		<section class="login" id="registerWindow" hidden>
+			<div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+	  			<div class="container">
+	    				<div class="row gx-lg-5 align-items-center justify-content-center">
+						<div class="col-lg-6 mb-5 mb-lg-0">
+		  					<div class="card">
+		    						<div class="card-body py-5 px-md-5">
+									<form>
+			  						<!-- 2 column grid layout with text inputs for the first and last names -->
+										<div class="row">
+											<div class="col-md-12 mb-4">
+												<div data-mdb-input-init class="form-outline">
+													<input type="text" id="regName" class="form-control" />
+													<label class="form-label" for="regName">Name</label>
+												</div>
+											</div>
+											<!-- <div class="col-md-6 mb-4">
+												<div data-mdb-input-init class="form-outline">
+													<input type="text" id="regLastName" class="form-control" />
+													<label class="form-label" for="lastName">Last name</label>
+												</div>
+											</div> -->
+										</div>
+    
+			  							<!-- Email input -->
+										<div data-mdb-input-init class="form-outline mb-4">
+											<input type="email" id="regEmail" class="form-control" />
+											<label class="form-label" for="regEmail">Email address</label>
+										</div>
+    
+			  							<!-- Password input -->
+										<div data-mdb-input-init class="form-outline mb-4">
+											<input type="text" id="regPassword" class="form-control" />
+											<label class="form-label" for="regPassword">Password</label>
+										</div>
+    
+			  							<!-- Submit button -->
+										<button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" id="signupBtn">
+										Sign up
+										</button>	
+									</form>
+		    						</div>
+		  					</div>
+						</div>
+	    				</div>
+	  			</div>
+			</div>
+    		</section>
+
+<section class=" row d-flex align-items-start justify-content-center"id="commentSection">
+		<!-- <section style="background-color: #ad655f;"> -->
+			<div class="card m-3 py-3 col-4" id="commentWindow" hidden>
+			  <div class="row d-flex justify-content-center">
+			    <div class="col-md-12 col-lg-10">
+				<h4 class="mb-0">Comments</h4>
+				<div class="card text-body" id="commentBody" hidden>
+					
+				  
+		    
+				  <div class="card-body p-4">
+					<div>
+						<div class="d-flex flex-start w-100">
+							<div data-mdb-input-init class="form-outline w-100">
+							  <textarea class="form-control" id="commentText" rows="4"
+							    style="background: #fff;"></textarea>
+							  <label class="form-label" for="textAreaExample">Message</label>
+							</div>
+						</div>
+						    <div class="float-end mt-2 pt-1">
+							<button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-sm" id="postCommentButton">Post comment</button>
+							<button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary btn-sm">Cancel</button>
+						    </div>
+				    </div>
+				  </div>
+				</div>
+			    </div>
+			  </div>
+			</div>
+</section>
+
+<section class="card-group" id="sectionAdShow" hidden>
+
+</section>
+<section class="card-group" id="showAllAds" hidden>
+
+</section>
+<section class="card-group" id="showUserAds" hidden>
+
+</section>
+<section class="card-group" id="showFavorites" hidden>
+
+</section>
+<section class="card-group" id="showCategories" hidden>
+
+</section>
+
+	<section class="login" id="loginWindow" hidden>
+		<div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+			<div class="container">
+				<div class="row gx-lg-5 align-items-center justify-content-center">
+
+				<div class="col-lg-6 mb-5 mb-lg-0">
+					  <div class="card">
+						    <div class="card-body py-5 px-md-5">
+							<form>
+		
+								<div data-mdb-input-init class="form-outline mb-4">
+									<input type="email" id="loginEmail" class="form-control" />
+									<label class="form-label" for="loginEmail">Email address</label>
+								</div>
+
+								 
+								<div data-mdb-input-init class="form-outline mb-4">
+									<input type="password" id="loginPassword" class="form-control" />
+									<label class="form-label" for="loginPassword">Password</label>
+								</div>
+
+								 
+								<button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" id="loginBtn">
+								Log in
+								</button>	
+							</form>
+						    </div>
+					  </div>
+				</div>
+			    </div>
+		  </div>
+	</div>
+    </section>
+
+	<section class="" id="createAdSection" hidden>
+
+	<div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+	  <div class="container">
+	    <div class="row gx-lg-5 align-items-center justify-content-center">
+	
+		<div class="col-lg-6 mb-5 mb-lg-0">
+		  <div class="card">
+		    <div class="card-body py-5 px-md-5">
+			<form>
+		
+			  <div data-mdb-input-init class="form-outline mb-2">
+				<label class="form-label" for="adName">Pavadinimas</label>
+			    	<input type="text" id="adName" class="form-control" />
+			  </div>
+
+			  <div class="input-group mb-2">
+				<label class="form-label" for="adCategory">Kategorija</label>
+				<select class="form-select w-100 form-control" id="adCategory">
+	
+				</select>
+			    </div>
+			    <div class="form-outline mb-2">
+				<label class="form-label" for="adDescription">Komentaras</label>
+				<textarea class="form-control" id="adDescription" rows="4"></textarea>
+			    </div>
+
+			    	<div data-mdb-input-init class="form-outline mb-2">
+					<label class="form-label" for="adPrice">Kaina</label>
+					<input type="text" id="adPrice" class="form-control" />
+			  	</div>
+				<div data-mdb-input-init class="form-outline mb-4">
+					<label class="form-label" for="adPhoto">Nuotrauka</label>
+					<input type="text" id="adPhoto" class="form-control" />
+				</div>
+    
+			
+			  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" id="postAdButton">
+			    Skelbti
+			  </button>
+    
+			
+			</form>
+		    </div>
+		  </div>
+		</div>
+	    </div>
+	  </div>
+	</div>
+	<!-- Jumbotron -->
+    	</section>
+<!-- Create Category -->
+	<section class="createCat" id="createCategory" hidden>
+		<div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+			<div class="container">
+				<div class="row gx-lg-5 align-items-center justify-content-center">
+				<div class="col-lg-6 mb-5 mb-lg-0">
+					<div class="card">
+						<div class="card-body py-5 px-md-5">
+							<form>
+								<div data-mdb-input-init class="form-outline mb-4">
+									<label class="form-label" for="categoryInput">Category</label>
+									<input type="text" id="categoryInput" class="form-control" />
+								</div>
+								<button type="submit" class="btn btn-primary btn-block mb-4" id="categoryBtn">
+								Create
+								</button>	
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- <table class="table align-middle">
+				<thead>
+				  <tr>
+				    <th scope="col">Category</th>
+				
+				  </tr>
+				</thead>
+				<tbody id="categoryTable">
+
+				</tbody> -->
+			    </table>
+		</div>
+	</div>
+
+	</section>
+
+	<section class="createCat" id="usersWindow" hidden>
+		<div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+			<!-- <div class="container">
+				<div class="row gx-lg-5 align-items-center justify-content-center">
+				<div class="col-lg-6 mb-5 mb-lg-0">
+					<div class="card">
+						<div class="card-body py-5 px-md-5">
+							<form>
+								<div data-mdb-input-init class="form-outline mb-4">
+									<input type="text" id="categoryInput" class="form-control" />
+									<label class="form-label" for="categoryInput">Category</label>
+								</div>
+								<button type="submit" class="btn btn-primary btn-block mb-4" id="categoryBtn">
+								Create
+								</button>	
+							</form>
+						</div>
+					</div>
+				</div>
+			</div> -->
+			<table class="table align-middle">
+				<thead>
+				  <tr>
+				    <th scope="col">Name</th>
+				    <th scope="col">Last Name</th>
+				    <th scope="col">Email</th>
+				  </tr>
+				</thead>
+				<tbody id="usersTable">
+
+				</tbody>
+			    </table>
+		</div>
+	</div>
+
+	</section>
+<!-- Modal -->
+      <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	    <div class="modal-header">
+	      <h5 class="modal-title" id="modalLabel">Modal title</h5>
+	    </div>
+	    <div class="modal-body">
+	      ...
+	    </div>
+	    <div class="modal-footer">
+	      <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+	    </div>
+	  </div>
+	</div>
+      </div>
+
+    		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    		<script src="index.js" type="module"></script>
+  	</body>
+</html>
