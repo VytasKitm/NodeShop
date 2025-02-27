@@ -74,10 +74,11 @@ const deleteAd = asyncHandler(async (req, res) => {
                 res.status(401)
                 throw new Error("User not found")
         }
-
-        if (ad.user.toString() !== req.user.id) {
-                res.status(401)
-                throw new Error("User not authorized")
+        if (req.user.role === "simple") {
+                if (ad.user.toString() !== req.user.id) {
+                        res.status(401)
+                        throw new Error("User not authorized")
+                }  
         }
 
         await Ad.findByIdAndDelete(req.params.id);

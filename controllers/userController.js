@@ -83,16 +83,17 @@ const getUserById = asyncHandler(async (req, res) => {
 // @route GET /api/users/user
 // @access PRIVATE
 
-const getUser = asyncHandler(async (req, res) => {
-        const user = await req.user
-        if (!req.user || !req.user._id) {
-                res.status(401)
-                throw new Error ("User not authenticated")
-        }
-        console.log(user)
-        res.status(200).json(user);
-
+const getUserF = asyncHandler(async (req, res) => {
+        // const user = await req.user
+        // console.log(user)
+        // if (!req.user || !req.user._id) {
+        //         res.status(401)
+        //         throw new Error ("User not authenticated")
+        // }
+        // console.log(user)
+        // res.status(200).json(user);
         // const {status, response} = await getUser(req)
+        res.status(200).json(req.user)
 
         // if (status===200) {
         //         req.user=response
@@ -136,4 +137,25 @@ const getUsers = asyncHandler(async (req, res) => {
         res.status(200).json(users)
 })
 
-module.exports = {registerUser, loginUser, getUsers, getUserById, getUser}
+// @route /api/users/delete/:id
+
+const deleteUser = asyncHandler(async (req, res) => {
+        const user = await User.findById(req.params.id);
+
+        if (!req.user) {
+                res.status(401)
+                throw new Error("User not found")
+        }
+
+        if (req.user.role === "simple") {
+                if (ad.user.toString() !== req.user.id) {
+                        res.status(401)
+                        throw new Error("User not authorized")
+                }  
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json({id: req.params.id})
+})
+
+module.exports = {registerUser, loginUser, getUsers, getUserById, getUserF, deleteUser}

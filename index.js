@@ -6,6 +6,7 @@ const loginMenu = document.getElementById("loginMenu")
 const logoutMenu = document.getElementById("logoutMenu")
 const createCat = document.getElementById("createCat")
 const catSelect = document.getElementById("dropdownMenu")
+const showUsersInfo = document.getElementById("showUsers")
 
 async function getData() {
       const token = localStorage.getItem("token")
@@ -20,35 +21,41 @@ async function getData() {
 
       console.log(userParse)
 }
+// getData()
 
 window.addEventListener("DOMContentLoaded", async () => {
-      const token = localStorage.getItem("token")
-      if (token) {
-            hideEverything("showAllAds","logoutMenu","navbar","createAdButton","myAds","createCat","dropdownMenu")
-            showAllAds(token)
-            showCategoryMenu()
-      }
-      else {
-            hideEverything("regMenu", "loginWindow")
-            const loginBtn = document.getElementById("loginBtn")
-            loginBtn.addEventListener("click", () => {
-                  loginUser()
-            })
-      }
+      checkUser()
 })
 
-catSelect.addEventListener("change", () => {
-      categorySearch()
+showUsersInfo.addEventListener("click", async () => {
+      hideEverything("logoutMenu","navbar","createAdButton","myAds","dropdownMenu","usersWindow","createCat","allAds")
+      showUsers()
 })
 
-createCat.addEventListener("click", () => {
+catSelect.addEventListener("change", async () => {
       const token = localStorage.getItem("token")
-      hideEverything("logoutMenu","navbar","createAdButton","myAds","createCategory","dropdownMenu")
+      const user = await getCurrentUser()
+      console.log(user)
+            if (user.role === "admin") {
+                  hideEverything("showCategories","logoutMenu","navbar","createAdButton","myAds","createCat","dropdownMenu","showUsers")
+                  categorySearch()
+                  showCategoryMenu()
+            }
+            else {
+                  hideEverything("showCategories","logoutMenu","navbar","createAdButton","myAds","dropdownMenu")
+                  categorySearch()
+                  showCategoryMenu()
+            }
+})
+
+createCat.addEventListener("click", async () => {
+      const token = localStorage.getItem("token")
+      showCategoryTable(token)
+      hideEverything("logoutMenu","navbar","createAdButton","myAds","createCategory","dropdownMenu", "adminAds","showUsers")
       const categoryBtn = document.getElementById("categoryBtn")
       categoryBtn.addEventListener("click", () => {
             createCategory(token)
       })
-      
 })
 
 logoutMenu.addEventListener("click", () => {
@@ -56,20 +63,49 @@ logoutMenu.addEventListener("click", () => {
       location.reload()
 })
 
-allAds.addEventListener("click", () => {
+allAds.addEventListener("click", async () => {
       const token = localStorage.getItem("token")
-      hideEverything("showAllAds","logoutMenu","navbar","createAdButton","myAds","createCat","dropdownMenu")
-      showAllAds(token)
+      const user = await getCurrentUser()
+            if (user.role === "admin") {
+                  hideEverything("showAdminAds","logoutMenu","navbar","createAdButton","myAds","createCat","dropdownMenu","showUsers")
+                  showAdminAds(token)
+                  showCategoryMenu()
+            }
+            else {
+                  hideEverything("showAllAds","logoutMenu","navbar","createAdButton","myAds","dropdownMenu")
+                  showAllAds(token)
+                  showCategoryMenu()
+            }
 })
 
-myAds.addEventListener("click", () => {
+myAds.addEventListener("click", async () => {
       const token = localStorage.getItem("token")
-      hideEverything("showUserAds","logoutMenu","navbar","createAdButton","allAds","createCat","dropdownMenu")
-      showUserAds(token)
+      const user = await getCurrentUser()
+      console.log(user)
+            if (user.role === "admin") {
+                  hideEverything("showUserAds","logoutMenu","navbar","createAdButton","allAds","createCat","dropdownMenu","showUsers")
+                  showUserAds(token)
+                  showCategoryMenu()
+            }
+            else {
+                  hideEverything("showUserAds","logoutMenu","navbar","createAdButton","allAds","dropdownMenu")
+                  showUserAds(token)
+                  showCategoryMenu()
+            }
 })
 
 createAdButton.addEventListener("click", async () => {
-      hideEverything("createAdSection","navbar","myAds","allAds","createCat","dropdownMenu")
+      const token = localStorage.getItem("token")
+      const user = await getCurrentUser()
+      console.log(user)
+            if (user.role === "admin") {
+                  hideEverything("createAdSection","logoutMenu","navbar","myAds","allAds","createCat","dropdownMenu","showUsers")
+                  showCategoryMenu()
+            }
+            else {
+                  hideEverything("createAdSection","logoutMenu","navbar","myAds","allAds","dropdownMenu")
+                  showCategoryMenu()
+            }
       const adCategory = document.getElementById("adCategory")
       const category = await getCategory()
             adCategory.innerHTML = ''
@@ -80,11 +116,10 @@ createAdButton.addEventListener("click", async () => {
             })
             console.log(category)
       const postAdButton = document.getElementById("postAdButton")
-      postAdButton.addEventListener("click", (event) => {
-            postAd()
-            setTimeout(() => {
-                  hideEverything("loginWindow")
-            }, 200) 
+      postAdButton.disabled = false
+      postAdButton.addEventListener("click", async (event) => {
+            await postAd()
+            postAdButton.disabled = true
       })
 })
 
@@ -108,16 +143,100 @@ loginMenu.addEventListener("click", () => {
       })
 })
 
+async function showUsers() {
+      const token = localStorage.getItem("token")
+      const usersTable = document.getElementById("usersTable")
+      usersTable.innerHTML = ""
+      const usersData = await fetch(`http://localhost:5001/users/list`, {
+      method: 'GET',
+      headers: {'Authorization': `Bearer ${token}`},
+      })
+      const users = await usersData.json()
+      Object.keys(users).forEach((key) => {
+            if (users[key].role != "admin") {
+                  const tr = document.createElement("tr")
+                  const tdName = document.createElement("td")
+                  const tdEmail = document.createElement("td")
+                  const tdBtn = document.createElement("td")
+                  const deleteButton = document.createElement("button")
+                  deleteButton.textContent = "Delete"
+                  deleteButton.type = "submit"
+                  deleteButton.id = users[key]._id
+                  deleteButton.classList.add("btn","btn-primary","btn-block")
+
+                  deleteButton.addEventListener("click", function(event) {
+                        event.preventDefault()
+                        deleteUser(token, this.id)
+                  })
+
+                  tdName.textContent = users[key].name
+                  tdEmail.textContent = users[key].email
+                  tdBtn.append(deleteButton)
+                  tr.append(tdName,tdEmail, tdBtn)
+                  usersTable.appendChild(tr)
+            }
+
+})
+}
+
+async function deleteUser(token, id) {
+      await fetch(`http://localhost:5001/users/delete/${id}`, {
+            method: 'DELETE',
+            headers: {'Authorization': `Bearer ${token}`},
+      })
+      showUsers(token)
+}
+
+async function checkUser() {
+      const token = localStorage.getItem("token")
+      const user = await getCurrentUser()
+      if (token) {
+            if (user.role === "admin") {
+                  hideEverything("showAdminAds","logoutMenu","navbar","createAdButton","myAds","createCat","dropdownMenu","showUsers")
+                  showAdminAds(token)
+                  showCategoryMenu()
+            }
+            else {
+                  hideEverything("showAllAds","logoutMenu","navbar","createAdButton","myAds","dropdownMenu")
+                  showAllAds(token)
+                  showCategoryMenu()
+            }
+      }
+      else {
+            hideEverything("regMenu", "loginWindow")
+            const loginBtn = document.getElementById("loginBtn")
+            loginBtn.addEventListener("click", () => {
+                  loginUser()
+            })
+      }
+}
+
+async function getCurrentUser() {
+      const token = localStorage.getItem("token")
+      const currentUserDiv = document.getElementById("currentUser")
+      if (token) {
+                  const userProm = await fetch(`http://localhost:5001/users/user`, {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${token}`},
+            })
+            const user = await userProm.json()
+            currentUserDiv.innerHTML = `Prisijunge  ${user.name}.         `
+            return user
+      }
+
+}
+
 async function categorySearch() {
       const dropdownMenu = document.getElementById("dropdownMenu")
       const token = localStorage.getItem("token")
       const ads = document.querySelectorAll(".adCard")
+
       ads.forEach(element => {
             element.remove()
       })
-
-      const showUserAds = document.getElementById("showUserAds")
-      const catAds = await fetch('http://localhost:5001/category/search', {
+      console.log(dropdownMenu.value)
+      const showCategories = document.getElementById("showCategories")
+      const catAds = await fetch(`http://localhost:5001/category/search/${dropdownMenu.value}`, {
             method: 'GET',
             headers: {'Authorization': `Bearer ${token}`},
       })
@@ -147,21 +266,29 @@ async function categorySearch() {
                   <small>Kaina: ${data[key].price}</small>
             </div>`
 
-            const deleteAdButton = document.createElement("button")
-            deleteAdButton.innerHTML = "<i class='fs-6 bi bi-trash'></i>"
-            deleteAdButton.id = `delete${key}`
-            deleteAdButton.classList.add("btn","bg-white", "btn-sm")
-            deleteAdButton.style.position = "absolute"
-            deleteAdButton.style.top = "5px";
-            deleteAdButton.style.right = "5px";
-            deleteAdButton.addEventListener("click", function (event) {
-                  event.preventDefault()
-                  deleteAd(token, data[key]._id)
-            })
-            newAdCard.append(deleteAdButton)
+            // const deleteAdButton = document.createElement("button")
+            // deleteAdButton.innerHTML = "<i class='fs-6 bi bi-trash'></i>"
+            // deleteAdButton.id = `delete${key}`
+            // deleteAdButton.classList.add("btn","bg-white", "btn-sm")
+            // deleteAdButton.style.position = "absolute"
+            // deleteAdButton.style.top = "5px";
+            // deleteAdButton.style.right = "5px";
+            // deleteAdButton.addEventListener("click", function (event) {
+            //       event.preventDefault()
+            //       deleteAd(token, data[key]._id)
+            // })
+            // newAdCard.append(deleteAdButton)
 
-            showUserAds.appendChild(newAdCard)
+            showCategories.appendChild(newAdCard)
             }
+}
+
+async function deleteCategory(token, id) {
+      const deletedId = await fetch(`http://localhost:5001/category/delete/${id}`, {
+            method: 'DELETE',
+            headers: {'Authorization': `Bearer ${token}`},
+      })
+      showCategoryTable(token)
 }
 
 async function showCategoryMenu() {
@@ -176,26 +303,59 @@ async function showCategoryMenu() {
       })
 }
 
+async function showCategoryTable(token) {
+      const categoryTable = document.getElementById("categoryTable")
+      categoryTable.innerHTML = ""
+      const catData = await getCategory(token)
+      Object.keys(catData).forEach((key) => {
+            const tr = document.createElement("tr")
+            const tdName = document.createElement("td")
+            const tdBtn = document.createElement("td")
+            tdBtn.classList.add("tdBtn")
+            const deleteButton = document.createElement("button")
+            deleteButton.textContent = "Delete"
+            deleteButton.type = "submit"
+            deleteButton.id = catData[key]._id
+            deleteButton.classList.add("btn","btn-primary","btn-block")
+            
+            deleteButton.addEventListener("click", function(event) {
+                  event.preventDefault()
+                  deleteCategory(token, this.id)
+            })
+
+            tdName.textContent = catData[key].category
+            tdBtn.append(deleteButton)
+            tr.append(tdName, tdBtn)
+            categoryTable.appendChild(tr)
+})
+}
+
 async function createCategory(token) {
       const category = document.getElementById("categoryInput").value.trim()
       
       if (!category) {
             alert("Uzpildykite lauka.")
       }
+      const searchResult = await categorySearchByName(token, category)
+      if (searchResult == 0) {
+            try {
+                  const createCategory = await fetch('http://localhost:5001/category', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({category})
+                  })
+                  showCategoryTable(token)
+            }
+            catch (error){
+                  alert("Klaida.", error)
+            }
+      }
+      else {
+            alert("tokia kategorija jau yra")
+      }
 
-      try {
-            const createCategory = await fetch('http://localhost:5001/category', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json',
-                              'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({category})
-            })
-            console.log(createCategory)
-      }
-      catch (error){
-            alert("Klaida.", error)
-      }
 }
 
 async function postAd() {
@@ -218,7 +378,6 @@ async function postAd() {
                   },
                   body: JSON.stringify({title, category, description, price, photo})
             })
-            console.log(category)
             const createAdParse = await createAd.json()
 
             if (!createAd.ok) {
@@ -304,12 +463,12 @@ async function deleteAd(token, id) {
             method: 'DELETE',
             headers: {'Authorization': `Bearer ${token}`},
       })
-      console.log(deletedId)
       showUserAds(token)
+      showAdminAds(token)
 }
 
-async function getCategory() {
-      const token = localStorage.getItem("token")
+async function getCategory(token) {
+      // const token = localStorage.getItem("token")
       const categoryData = await fetch('http://localhost:5001/category/list', {
             method: 'GET',
             headers: {'Content-Type': 'application/json',
@@ -317,6 +476,15 @@ async function getCategory() {
             }})
             const category = await categoryData.json()
             return category 
+}
+
+async function categorySearchByName(token, name) {
+      const categoryByNameData = await fetch(`http://localhost:5001/category/name/${name}`, {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${token}`},
+      })
+      const category = await categoryByNameData.json()
+      return category
 }
 
 async function getUserById(id, token) {
@@ -359,7 +527,13 @@ async function showAllAds(token) {
             const newAdCard = document.createElement("div")
             console.log(key)
             const userData = await getUserById(data[key].user, token)
-            console.log(userData)
+            let userName
+            if (userData == null) {
+                  userName = "Vartotojas pasalintas."
+            }
+            else {
+                  userName = userData.name
+            }
             newAdCard.classList.add("card","border-#ff0909","m-3","adCard")
             newAdCard.style.maxWidth = "25rem"
             newAdCard.innerHTML = `
@@ -371,7 +545,7 @@ async function showAllAds(token) {
 
             <ul class="list-group list-group-flush">
                   <li class="list-group-item">Kategorija:${data[key].category} </li>
-                  <li class="list-group-item">Ikele: ${userData.name}</li> 
+                  <li class="list-group-item">Ikele: ${userName}</li> 
             </ul>
       
             <div class="card-footer">
@@ -401,7 +575,13 @@ async function showUserAds(token) {
             const newAdCard = document.createElement("div")
             console.log(data[key]._id)
             const userData = await getUserById(data[key].user, token)
-            console.log(userData)
+            let userName
+            if (userData == null) {
+                  userName = "Vartotojas pasalintas."
+            }
+            else {
+                  userName = userData.name
+            }
             newAdCard.classList.add("card","border-#ff0909","m-3","adCard")
             newAdCard.style.maxWidth = "25rem"
             newAdCard.innerHTML = `
@@ -413,7 +593,7 @@ async function showUserAds(token) {
 
             <ul class="list-group list-group-flush">
                   <li class="list-group-item">Kategorija: ${data[key].category} </li>
-                  <li class="list-group-item">Ikele: ${userData.name}</li> 
+                  <li class="list-group-item">Ikele: ${userName}</li> 
             </ul>
             <div class="card-footer">
                   <small>Kaina: ${data[key].price}</small>
@@ -433,6 +613,65 @@ async function showUserAds(token) {
             newAdCard.append(deleteAdButton)
 
             showUserAds.appendChild(newAdCard)
+            }
+}
+
+async function showAdminAds(token) {
+      const ads = document.querySelectorAll(".adCard")
+      ads.forEach(element => {
+            element.remove()
+      })
+
+      const showAdminAds = document.getElementById("showAdminAds")
+      const userAds = await fetch('http://localhost:5001/ads/all', {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${token}`},
+      })
+      const data = await userAds.json()
+      console.log(data)
+      for (let key in data) {
+            console.log(key)
+            const newAdCard = document.createElement("div")
+            console.log(data[key]._id)
+            const userData = await getUserById(data[key].user, token)
+            let userName
+            if (userData == null) {
+                  userName = "Vartotojas pasalintas."
+            }
+            else {
+                  userName = userData.name
+            }
+            newAdCard.classList.add("card","border-#ff0909","m-3","adCard")
+            newAdCard.style.maxWidth = "25rem"
+            newAdCard.innerHTML = `
+            <img src="${data[key].photo}" class="card-img-top" alt="${data[key].title}">
+            <div class="card-body">
+                  <h5 class="card-title">${data[key].title}</h5>
+                  <p class="card-text">${data[key].description}</p>
+            </div>
+
+            <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Kategorija: ${data[key].category} </li>
+                  <li class="list-group-item">Ikele: ${userName}</li> 
+            </ul>
+            <div class="card-footer">
+                  <small>Kaina: ${data[key].price}</small>
+            </div>`
+
+            const deleteAdButton = document.createElement("button")
+            deleteAdButton.innerHTML = "<i class='fs-6 bi bi-trash'></i>"
+            deleteAdButton.id = `delete${key}`
+            deleteAdButton.classList.add("btn","bg-white", "btn-sm")
+            deleteAdButton.style.position = "absolute"
+            deleteAdButton.style.top = "5px";
+            deleteAdButton.style.right = "5px";
+            deleteAdButton.addEventListener("click", function (event) {
+                  event.preventDefault()
+                  deleteAd(token, data[key]._id)
+            })
+            newAdCard.append(deleteAdButton)
+
+            showAdminAds.appendChild(newAdCard)
             }
 }
 
@@ -461,7 +700,8 @@ function hideEverything(...args) {
             "regMenu",
             "logoutMenu",
             "usersWindow",
-            "showUserAds"
+            "showUserAds",
+            "showAdminAds"
       ]
 
       allElements.forEach((id) => {
@@ -476,60 +716,6 @@ function hideEverything(...args) {
       })
 }
 
-// function hideEverythingOld() {
-//       const registerWindow = document.getElementById("registerWindow")
-//       const commentSection = document.getElementById("commentSection")
-//       const sectionAdShow = document.getElementById("sectionAdShow")
-//       const loginWindow = document.getElementById("loginWindow")
-//       const createAdSection = document.getElementById("createAdSection")
-//       const createCategory = document.getElementById("createCategory")
-//       const commentWindow = document.getElementById("commentWindow")
-//       const showAllAds = document.getElementById("showAllAds")
-//       const showFavorites = document.getElementById("showFavorites")
-//       const showCategories = document.getElementById("showCategories")
-//       const createCat = document.getElementById("createCat")
-//       const showUsers = document.getElementById("showUsers")
-//       const allAds = document.getElementById("allAds")
-//       const createAdButton = document.getElementById("createAdButton")
-//       const myAds = document.getElementById("myAds")
-//       const favorites = document.getElementById("favorites")
-//       const dropdownMenu = document.getElementById("dropdownMenu")
-//       const navbar = document.getElementById("navbar")
-//       const loginMenu = document.getElementById("loginMenu")
-//       const regMenu = document.getElementById("regMenu")
-//       const logoutMenu = document.getElementById("logoutMenu")
-//       const categoryWindow = document.getElementById("createCategory")
-//       const usersWindow = document.getElementById("usersWindow")
-//       const showUserAds = document.getElementById("showMyAds")
-
-//       showUserAds.hidden = true
-//       showCategories.hidden = true
-//       showFavorites.hidden = true
-//       showAllAds.hidden = true
-//       registerWindow.hidden = true
-//       sectionAdShow.hidden = true
-//       loginWindow.hidden = false
-//       createAdSection.hidden = true
-//       createCategory.hidden = true
-//       commentWindow.hidden = true
-//       commentSection.hidden = true
-
-//       navbar.hidden = false
-//       createAdButton.hidden = true
-//       myAds.hidden = true
-//       favorites.hidden = true
-//       dropdownMenu.hidden = true
-//       createCat.hidden = true
-//       showUsers.hidden = true
-//       allAds.hidden = true
-
-//       loginMenu.hidden = false
-//       regMenu.hidden = false
-//       logoutMenu.hidden = true
-
-//       categoryWindow.hidden = true
-//       usersWindow.hidden = true
-// }
 
 
 

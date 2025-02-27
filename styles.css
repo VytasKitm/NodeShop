@@ -5,3 +5,8 @@ body {
 label {
       color: black;
 }
+
+.tdBtn {
+      display: flex;
+      justify-content: end;
+}

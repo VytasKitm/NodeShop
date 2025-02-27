@@ -25,10 +25,32 @@ const getCategory = asyncHandler(async (req, res) => {
         res.status(200).json(category);
 })
 
-const categorySearch = asyncHandler(async (req, res) => {
-        const adsByCat = await Ad.find({category: req.params.category})
-        res.status(200).json(adsByCat);
+// @route GET /api/:id
+const categorySearchByName = asyncHandler(async (req, res) => {
+        const categoryByName = await Category.find({category: req.params.category})
+        res.status(200).json(categoryByName);
 })
 
 
-module.exports = {recordCategory, getCategory, categorySearch}
+// @route GET /api/search/:id
+const categorySearch = asyncHandler(async (req, res) => {
+        const adsByCat = await Ad.find({category: req.params.id})
+        res.status(200).json(adsByCat);
+})
+
+// @route DELETE /api/delete/:id
+
+const deleteCategory = asyncHandler(async (req, res) => {
+        const category = await Category.findById(req.params.id);
+
+        if (!category) {
+                res.status(400)
+                throw new Error("Ad not found")
+        }
+
+        await Category.findByIdAndDelete(req.params.id);
+        res.status(200).json({id: req.params.id})
+})
+
+
+module.exports = {recordCategory, getCategory, categorySearch, deleteCategory, categorySearchByName}
